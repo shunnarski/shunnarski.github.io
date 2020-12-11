@@ -1,4 +1,4 @@
-const comparisonOperators = [">", "<", ">=", "<=", "==", "!="]
+const comparisonOperators = [">=", "<=", "==", "!=", ">", "<"]
 const operations = ["+=", "-=", "/=", "*=", "++", "--", "="]
 const arithOperations = ["+", "-", "/", "*"]
 
@@ -70,8 +70,6 @@ function getBiggestBigOString(bigOStrings) {
 function translateBigOStringToBigO(bigOString) {
     var nCount = 0;
     var lCount = 0;
-
-    console.log("BigOString " + bigOString);
 
     for(var i = 0; i < bigOString.length; i++) {
         var c = bigOString[i];
@@ -169,6 +167,63 @@ function checkAlphaNumeric(lexicon) {
 
 }
 
+function evaluateForLoopElements(initValue, rangeStop, rangeOp, inc) {
+    let initValueType = checkAlphaNumeric(initValue);
+    if(initValueType === "var") {
+        let rangeStopType = checkAlphaNumeric(rangeStop);
+        if(rangeStopType === "var") {
+            return "const";
+        }
+        else if(rangeStopType === "num") {
+            if(rangeOp === "<=" || rangeOp === "<") {
+                return "err";
+            }
+            else if(rangeOp === ">=" || rangeOp === ">") {
+                if(inc == "--" || inc == "-=") {
+                    return "lin";
+                }
+                else if(inc === "/=") {
+                    return "log";
+                }
+                else {
+                    return "err";
+                }
+            }
+        }
+        else {
+            return "err";
+        }
+    }
+    else if(initValueType === "num") {
+        let rangeStopType = checkAlphaNumeric(rangeStop);
+        if(rangeStopType === "var") {
+            if(rangeOp === "<=" || rangeOp === "<") {
+                if(inc === "++" || inc === "+=") {
+                    return "lin";
+                }
+                else if(inc === "*=") {
+                    return "log";
+                }
+                else {
+                    return "err";
+                }
+            }
+            else if(rangeOp === ">=" || rangeOp === ">") {
+                return "err";
+            }
+        }
+        else if(rangeStopType === "num") {
+            return "const";
+        }
+        else {
+            return "err";
+        }
+    }
+    else {
+        return "err";
+    }
+}
+
 function evaluateForStatement(forLine) {
     let forLineSplit = forLine['line'].split("(");
     let level = forLine['level'];
@@ -178,16 +233,18 @@ function evaluateForStatement(forLine) {
     let range = forLineLogic[1];
     let operation = forLineLogic[2].split(")")[0];
 
-    // read init value
+    // get init value
     var initValue = varInstantiation.split("=");
     initValue = initValue[initValue.length - 1];
 
-    // read range stop
+    // read range stop where the loop will end and the operation being performed
     var rangeStop;
+    var rangeOp;
     for(var i = 0; i < comparisonOperators.length; i++) {
         let op = comparisonOperators[i];
         if(range.indexOf(op) > -1) {
             let rangeStopSplit = range.split(op);
+            rangeOp = op;
             rangeStop = rangeStopSplit[rangeStopSplit.length - 1];
             break;
         }
@@ -212,7 +269,8 @@ function evaluateForStatement(forLine) {
                     let typeCheck = checkAlphaNumeric(lex)
   
                     if(typeCheck === "var") {
-                        operationDone = "lin";
+                        console.log("op: " + op)
+                        operationDone = evaluateForLoopElements(initValue, rangeStop, rangeOp, op);
                     }
                     else {
                         operationDone = "err";
@@ -232,7 +290,7 @@ function evaluateForStatement(forLine) {
                             rightLex = rightLex.trim();
                             let rightLexVal = Number(rightLex);
                             if(rightLexVal > 0) {
-                                operationDone = "lin";
+                                operationDone = evaluateForLoopElements(initValue, rangeStop, rangeOp, op);
                             }
                             else {
                                 operationDone = "err";
@@ -262,7 +320,7 @@ function evaluateForStatement(forLine) {
                             rightLex = rightLex.trim();
                             let rightLexVal = Number(rightLex);
                             if(rightLexVal > 1) {
-                                operationDone = "log";
+                                operationDone = evaluateForLoopElements(initValue, rangeStop, rangeOp, op);
                             }
                             else {
                                 operationDone = "err";
