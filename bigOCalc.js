@@ -269,7 +269,6 @@ function evaluateForStatement(forLine) {
                     let typeCheck = checkAlphaNumeric(lex)
   
                     if(typeCheck === "var") {
-                        console.log("op: " + op)
                         operationDone = evaluateForLoopElements(initValue, rangeStop, rangeOp, op);
                     }
                     else {
