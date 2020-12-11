@@ -138,9 +138,9 @@ function getForStatements(linesOfCode) {
 }
 
 function checkAlphaNumeric(lexicon) {
-    const alphaRegex = "^[a-zA-Z]*$"
+    const alphaRegex = "^[a-zA-Z.]*$"
     const numericRegex = "^[0-9]*$"
-    const alphaNumericRegex = "^[a-zA-Z0-9]*$"
+    const alphaNumericRegex = "^[a-zA-Z0-9.]*$"
 
     lexicon = lexicon.trim();
 
