@@ -224,18 +224,32 @@ function evaluateForLoopElements(initValue, rangeStop, rangeOp, inc) {
     }
 }
 
-function evaluateForStatement(forLine) {
-    let forLineSplit = forLine['line'].split("(");
-    let level = forLine['level'];
-    let forLineLogic = forLineSplit[1].split(";");
+function semiColonSplit(forLine, level) {
+    let forLineLogic = forLine.split(";");
 
-    let varInstantiation = forLineLogic[0];
-    let range = forLineLogic[1];
-    let operation = forLineLogic[2].split(")")[0];
+    try {
+        var varInstantiation = forLineLogic[0];
+        var range = forLineLogic[1];
+        var operation = forLineLogic[2].split(")")[0];
+    
+        // get init value
+        var initValue = varInstantiation.split("=");
+        initValue = initValue[initValue.length - 1];
 
-    // get init value
-    var initValue = varInstantiation.split("=");
-    initValue = initValue[initValue.length - 1];
+        if(!initValue || !range || !operation) {
+            return {
+                "eval": "err",
+                "level": level
+            }
+        }
+    }
+    catch {
+        return {
+            "eval": "err",
+            "level": level
+        }
+    }
+   
 
     // read range stop where the loop will end and the operation being performed
     var rangeStop;
@@ -342,6 +356,69 @@ function evaluateForStatement(forLine) {
     return {
         "eval": operationDone,
         "level": level
+    }
+}
+
+function colonSplit(forLine, level) {
+
+    let forLineLogic = forLine.split(":");
+
+    try {
+        var varInstantiation = forLineLogic[0];
+        var range = forLineLogic[1].split(")")[0];
+        
+        // get init value
+        var initValue = varInstantiation.split(" ")[1];
+
+        if(!initValue || !range) {
+            return {
+                "eval": "err",
+                "level": level
+            }
+        }
+    }
+    catch {
+        return {
+            "eval": "err",
+            "level": level
+        }
+    }
+
+    var operationDone;
+    let initTypeCheck = checkAlphaNumeric(initValue);
+    if(initTypeCheck === "var") {
+        rangeTypeCheck = checkAlphaNumeric(range);
+        if(rangeTypeCheck === "var") {
+            operationDone = "lin";
+        }
+        else if(rangeTypeCheck == "num") {
+            operationDone = "const";
+        }
+        else {
+            operationDone = "err";
+        }
+    }
+    else {
+        operationDone = "err";
+    }
+
+    return {
+        "eval": operationDone,
+        "level": level
+    }
+}
+
+function evaluateForStatement(forLine) {
+    let forLineSplit = forLine['line'].split("(");
+    let level = forLine['level'];
+
+    forLine = forLineSplit[1];
+    if(forLine.indexOf(":") > -1) {
+        return colonSplit(forLine, level);
+    }
+
+    else {
+        return semiColonSplit(forLine, level);
     }
 
 }

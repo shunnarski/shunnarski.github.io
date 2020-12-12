@@ -9,35 +9,15 @@ dropdown.onchange = function() {
 
 }
 
-
-// when button is clicked, gets the text from the text area:
-var getBigOBtn = document.getElementById("getBigOBtn");
-getBigOBtn.onclick = function() {
-    var codeInput = document.getElementById("codeInput")
-    var code = codeInput.value.trim();
-    
-    // now parse the text
-    var result = parseInput(code)
-
-    console.log(result);
-
-    // set the result
-    var resultShow = document.getElementById("resultShow");
+function displayBigOResult(resultShow, result) {
     resultShow.innerHTML = "";
 
     var resultH2 = document.createElement("h2");
-    // let text = document.createTextNode("hello");
-    // let x = document.createElement("sup");
-    // let xt = document.createTextNode("2");
-    // // x.appendChild(xt);
-
-    // resultH2.appendChild(text);
-    // resultH2.appendChild(x);
     var text = "";
     for(var i = 0; i < result.length; i++) {
         var c = result[i];
         var c_type = checkAlphaNumeric(c);
-        if(c_type == "var" || c == "(" || c == ")") {
+        if(c_type == "var" || c == "(" || c == ")" || c == "1") {
             text += c;
         }
         else if(c_type == "num") {
@@ -59,6 +39,23 @@ getBigOBtn.onclick = function() {
 
     resultShow.appendChild(resultH2);
 
+}
+
+
+// when button is clicked, gets the text from the text area:
+var getBigOBtn = document.getElementById("getBigOBtn");
+getBigOBtn.onclick = function() {
+    var codeInput = document.getElementById("codeInput")
+    var code = codeInput.value.trim();
+    
+    // now parse the text
+    var result = parseInput(code)
+
+    // set the result
+    var resultShow = document.getElementById("resultShow");
+
+    displayBigOResult(resultShow, result);
+    
     // resultShow.innerHTML = result;
 }
 
