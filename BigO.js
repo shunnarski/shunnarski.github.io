@@ -6,12 +6,10 @@ var dropdown = document.getElementById("languageOption");
 dropdown.onchange = function() {
     let codeInput = document.getElementById("codeInput");
     codeInput.value = "";
-
 }
 
 function displayBigOResult(resultShow, result) {
     resultShow.innerHTML = "";
-
     var resultH2 = document.createElement("h2");
     var text = "";
     for(var i = 0; i < result.length; i++) {
@@ -68,9 +66,8 @@ function displayForLineAnalysis(codeAnalysis, forLines, forLineEvals) {
     h3.appendChild(h3Txt);
     codeAnalysis.appendChild(h3);
 
-    for(var i = 0; i < forLines.length; i++) {
-        console.log(forLines[i]);
 
+    for(var i = 0; i < forLines.length; i++) {
         let forLine = forLines[i]['line'].split("{")[0];
         let forLevel = forLines[i]['level'];
         let forLineEval = forLineEvals[i];
@@ -95,7 +92,6 @@ function displayForLineAnalysis(codeAnalysis, forLines, forLineEvals) {
         p.appendChild(span_eval);
         p.appendChild(span_level);
 
-
         codeAnalysis.appendChild(p);
     }
 }
@@ -114,8 +110,10 @@ function parseInput(code, codeAnalysis) {
     let forLines = result['forLines'];
     let forLineEvals = result['forLineEvals']
 
-    // display each for line evaluation:
-    displayForLineAnalysis(codeAnalysis, forLines, forLineEvals);
+    if(finalBigO && forLines && forLineEvals) {
+        // display each for line evaluation:
+        displayForLineAnalysis(codeAnalysis, forLines, forLineEvals);
+    }
 
     return finalBigO;
 }

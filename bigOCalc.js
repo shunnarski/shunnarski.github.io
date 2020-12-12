@@ -450,6 +450,7 @@ function getBigONotation(forStatements) {
         val_results.push(r);
     })
 
+
     var bigORes;
     var bigOString = "";
     var bigOList = [];
@@ -477,7 +478,6 @@ function getBigONotation(forStatements) {
         }
 
         let char = evalToBigOChar(eval);
-        
         if(char === "E") {
             hasError = true;
         }
@@ -490,15 +490,26 @@ function getBigONotation(forStatements) {
     bigOList.push(bigOString);
 
     if(hasError) {
-        return "An error has occurred. Make sure the syntax of your " +
-            "code is correct or that it's logic doesn't create an infinite loop.";    
+        let finalResult = "An error has occurred. Make sure the syntax of your " +
+        "code is correct or that it's logic doesn't create an infinite loop."; 
+        return {
+            "final": finalResult,
+            "forLines": forStatements,
+            "forLineEvals": null
+        }   
     }
 
     if(isLazy) {
-        return "Congrats, you found a use case that I was really too lazy to implement. " +
+        let finalResult = "Congrats, you found a use case that I was really too lazy to implement. " +
         "It's not that it's IMPOSSIBLE to do, but there are so many insane edge cases to this " +
         "that I decided it wasn't worth the hassle. Please, for the love of God, use a simpler for loop that uses" +
-        " operators like ++, --, +=, -=, *=, /="
+        " operators like ++, --, +=, -=, *=, /=";
+
+        return {
+            "final": finalResult,
+            "forLines": forStatements,
+            "forLineEvals": null
+        }  
     }
 
     bigORes = getBiggestBigOString(bigOList);
