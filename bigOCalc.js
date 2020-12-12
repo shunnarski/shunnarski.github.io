@@ -67,6 +67,25 @@ function getBiggestBigOString(bigOStrings) {
 
 }
 
+function evalToBigOChar(eval) {
+    if(eval === "lin") {
+        return "N";
+    }
+
+    else if(eval == 'log') {
+        return "L";
+    }
+    
+    else if(eval == "const") {
+        return "O";
+    }
+
+    else {
+        return "E";
+    }
+
+}
+
 function translateBigOStringToBigO(bigOString) {
     var nCount = 0;
     var lCount = 0;
@@ -436,6 +455,7 @@ function getBigONotation(forStatements) {
     var bigOList = [];
     var hasError = false;
     var isLazy = false;
+    var evalChars = [];
     for(var i = 0; i < val_results.length; i++) {
         let val_result = val_results[i];
         let eval = val_result['eval'];
@@ -456,22 +476,15 @@ function getBigONotation(forStatements) {
             break;
         }
 
-        else if(eval === "lin") {
-            bigOString += "N";
-        }
-
-        else if(eval == 'log') {
-            bigOString += "L"
-        }
+        let char = evalToBigOChar(eval);
         
-        else if(eval == "const") {
-            bigOString += "O"
-        }
-
-        else {
+        if(char === "E") {
             hasError = true;
         }
-
+        else {
+            bigOString += char;
+            evalChars.push(char);
+        }
     }
 
     bigOList.push(bigOString);
@@ -484,12 +497,23 @@ function getBigONotation(forStatements) {
     if(isLazy) {
         return "Congrats, you found a use case that I was really too lazy to implement. " +
         "It's not that it's IMPOSSIBLE to do, but there are so many insane edge cases to this " +
-        "that I decided it wasn't worth the hassle. Please, for the love of God, use a simpler for or while loop."
+        "that I decided it wasn't worth the hassle. Please, for the love of God, use a simpler for loop that uses" +
+        " operators like ++, --, +=, -=, *=, /="
     }
 
     bigORes = getBiggestBigOString(bigOList);
     var finalResult = translateBigOStringToBigO(bigORes);
 
-    return finalResult;
+    // now set the code analysis
+    forLineBigOEvals = [];
+    evalChars.forEach(c => {
+        forLineBigOEvals.push(translateBigOStringToBigO(c));
+    })
+
+    return {
+        "final": finalResult,
+        "forLines": forStatements,
+        "forLineEvals": forLineBigOEvals
+    };
 
 }

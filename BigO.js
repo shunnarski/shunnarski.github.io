@@ -47,9 +47,11 @@ var getBigOBtn = document.getElementById("getBigOBtn");
 getBigOBtn.onclick = function() {
     var codeInput = document.getElementById("codeInput")
     var code = codeInput.value.trim();
-    
+
+    var codeAnalysis = document.getElementById("codeAnalysis");
+    codeAnalysis.innerHTML = "";
     // now parse the text
-    var result = parseInput(code)
+    var result = parseInput(code, codeAnalysis);
 
     // set the result
     var resultShow = document.getElementById("resultShow");
@@ -59,16 +61,63 @@ getBigOBtn.onclick = function() {
     // resultShow.innerHTML = result;
 }
 
+function displayForLineAnalysis(codeAnalysis, forLines, forLineEvals) {
+
+    let h3 = document.createElement("h3");
+    let h3Txt = document.createTextNode("Code Analysis:");
+    h3.appendChild(h3Txt);
+    codeAnalysis.appendChild(h3);
+
+    for(var i = 0; i < forLines.length; i++) {
+        console.log(forLines[i]);
+
+        let forLine = forLines[i]['line'].split("{")[0];
+        let forLevel = forLines[i]['level'];
+        let forLineEval = forLineEvals[i];
+
+        let p = document.createElement("p");
+        p.style.fontSize = "20px";
+
+        let span_eval = document.createElement("span");
+        span_eval.style.marginLeft = "40px";
+
+        let evalTxt = document.createTextNode(forLineEval);
+        span_eval.appendChild(evalTxt);
+
+        let span_level = document.createElement("span");
+        span_level.style.marginLeft = "40px";
+
+        let levelTxt = document.createTextNode("Level: " + forLevel);
+        span_level.appendChild(levelTxt);
+
+        let forLineTxt = document.createTextNode(forLine);
+        p.appendChild(forLineTxt);
+        p.appendChild(span_eval);
+        p.appendChild(span_level);
+
+
+        codeAnalysis.appendChild(p);
+    }
+}
+
 
 // this function should parse the input of the code and determine the big O notation
 // params:
 //  code: The code input
-function parseInput(code) {
+function parseInput(code, codeAnalysis) {
     // get the for statement
     let newlineSplit = code.split("\n")
     let forStatements = getForStatements(newlineSplit);
     let result = getBigONotation(forStatements);
-    return result;
+
+    let finalBigO = result['final']
+    let forLines = result['forLines'];
+    let forLineEvals = result['forLineEvals']
+
+    // display each for line evaluation:
+    displayForLineAnalysis(codeAnalysis, forLines, forLineEvals);
+
+    return finalBigO;
 }
 
 
