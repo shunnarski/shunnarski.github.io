@@ -9,7 +9,8 @@ const arithOperations = ["+", "-", "/", "*"]
         2. The number of logN's in the string
 */
 
-function getBiggestBigOString(bigOStrings) {
+function getBiggestBigOString(bigObjs) {
+    var bigOStrings = bigObjs.map(x => x['bigOString']);
 
     var numberNsList = [];
     var maxNs = 0;
@@ -41,7 +42,13 @@ function getBiggestBigOString(bigOStrings) {
 
     // if there is only one top N string, stop there
     if(topBigNStrings.length == 1) {
-        return topBigNStrings[0];
+        var res;
+        for(var i = 0; i < bigOStrings.length; i++) {
+            if(bigOStrings[i] == topBigNStrings[0]) {
+                res = bigObjs[i];
+            }
+        }
+        return res;
     }
 
     // if not, check the next criteria of logs
@@ -63,7 +70,15 @@ function getBiggestBigOString(bigOStrings) {
         }
     }
 
-    return topBigNStrings[maxLsIndex];
+    var res = topBigNStrings[maxLsIndex];
+
+    for(var i = 0; i < bigOStrings.length; i++) {
+        if(bigOStrings[i] === res) {
+            res = bigObjs[i];
+        }
+    }
+
+    return res;
 
 }
 
@@ -158,7 +173,7 @@ function getForStatements(linesOfCode) {
 
 function checkAlphaNumeric(lexicon) {
     const alphaRegex = "^[a-zA-Z.]*$"
-    const numericRegex = "^-?[0-9]*$"
+    const numericRegex = "^-?[0-9.]*$"
     const alphaNumericRegex = "^[a-zA-Z0-9.]*$"
 
     lexicon = lexicon.trim();
@@ -221,7 +236,13 @@ function evaluateForLoopElements(initValue, rangeStop, rangeOp, inc) {
                     return "lin";
                 }
                 else if(inc === "*=") {
-                    return "log";
+                    let pf = parseFloat(initValue);
+                    if(pf > 0) {
+                        return "log";
+                    }
+                    else {
+                        return "err";
+                    }
                 }
                 else {
                     return "err";
@@ -450,31 +471,35 @@ function getBigONotation(forStatements) {
         val_results.push(r);
     })
 
-
     var bigORes;
     var bigOString = "";
     var bigOList = [];
     var hasError = false;
     var isLazy = false;
     var evalChars = [];
+    var levelOneIndex = 0;
     for(var i = 0; i < val_results.length; i++) {
         let val_result = val_results[i];
         let eval = val_result['eval'];
         let level = val_result['level'];
 
         if(i != 0 && level == 1) {
-            bigOList.push(bigOString);
+            let bigObj = {
+                "bigOString": bigOString,
+                "start_index": levelOneIndex,
+                "end_index": i-1
+            }
+            bigOList.push(bigObj);
+            levelOneIndex = i;
             bigOString = "";
         }
 
         if(eval === "err") {
             hasError = true;
-            break;
         }
 
         if(eval == "lazy") {
             isLazy = true;
-            break;
         }
 
         let char = evalToBigOChar(eval);
@@ -487,33 +512,16 @@ function getBigONotation(forStatements) {
         }
     }
 
-    bigOList.push(bigOString);
-
-    if(hasError) {
-        let finalResult = "An error has occurred. Make sure the syntax of your " +
-        "code is correct or that it's logic doesn't create an infinite loop."; 
-        return {
-            "final": finalResult,
-            "forLines": forStatements,
-            "forLineEvals": null
-        }   
-    }
-
-    if(isLazy) {
-        let finalResult = "Congrats, you found a use case that I was really too lazy to implement. " +
-        "It's not that it's IMPOSSIBLE to do, but there are so many insane edge cases to this " +
-        "that I decided it wasn't worth the hassle. Please, for the love of God, use a simpler for loop that uses" +
-        " operators like ++, --, +=, -=, *=, /=";
-
-        return {
-            "final": finalResult,
-            "forLines": forStatements,
-            "forLineEvals": null
-        }  
-    }
+    bigOList.push({
+        "bigOString": bigOString,
+        "start_index": levelOneIndex,
+        "end_index": i-1
+    });
 
     bigORes = getBiggestBigOString(bigOList);
-    var finalResult = translateBigOStringToBigO(bigORes);
+    var finalResult = translateBigOStringToBigO(bigORes['bigOString']);
+    var final_start_ind = bigORes['start_index'];
+    var final_end_ind = bigORes['end_index'];
 
     // now set the code analysis
     forLineBigOEvals = [];
@@ -521,10 +529,24 @@ function getBigONotation(forStatements) {
         forLineBigOEvals.push(translateBigOStringToBigO(c));
     })
 
+    if(hasError) {
+        finalResult = "An error has occurred. Make sure the syntax of your " +
+        "code is correct or that it's logic doesn't create an infinite loop.";  
+    }
+
+    if(isLazy) {
+        finalResult = "Congrats, you found a use case that I was really too lazy to implement. " +
+        "It's not that it's IMPOSSIBLE to do, but there are so many insane edge cases to this " +
+        "that I decided it wasn't worth the hassle. Please, for the love of God, use a simpler for loop that uses" +
+        " operators like ++, --, +=, -=, *=, /=";
+    }
+
     return {
         "final": finalResult,
         "forLines": forStatements,
-        "forLineEvals": forLineBigOEvals
+        "forLineEvals": forLineBigOEvals,
+        'start': final_start_ind,
+        'end': final_end_ind
     };
 
 }

@@ -10,12 +10,13 @@ dropdown.onchange = function() {
 
 function displayBigOResult(resultShow, result) {
     resultShow.innerHTML = "";
-    var resultH2 = document.createElement("h2");
+    var resultH2 = document.createElement("h3");
     var text = "";
+    const displayRegex = "^[()1.]*$"
     for(var i = 0; i < result.length; i++) {
         var c = result[i];
         var c_type = checkAlphaNumeric(c);
-        if(c_type == "var" || c == "(" || c == ")" || c == "1") {
+        if(c_type == "var" || c.match(displayRegex)) {
             text += c;
         }
         else if(c_type == "num") {
@@ -59,7 +60,7 @@ getBigOBtn.onclick = function() {
     // resultShow.innerHTML = result;
 }
 
-function displayForLineAnalysis(codeAnalysis, forLines, forLineEvals) {
+function displayForLineAnalysis(codeAnalysis, forLines, forLineEvals, start, end) {
 
     let h3 = document.createElement("h3");
     let h3Txt = document.createTextNode("Code Analysis:");
@@ -75,8 +76,39 @@ function displayForLineAnalysis(codeAnalysis, forLines, forLineEvals) {
         let p = document.createElement("p");
         p.style.fontSize = "20px";
 
+        if(i >= start && i <= end) {
+            p.style.backgroundColor = "#dbfacd";
+        }
+
+        let div_eval = document.createElement("div");
+        div_eval.style.display = "inline-block";
+        div_eval.classList.add("tooltip");
+
         let span_eval = document.createElement("span");
-        span_eval.style.marginLeft = "40px";
+        span_eval.style.padding = "60px";
+        
+        let tooltip_span = document.createElement("span");
+        tooltip_span.classList.add("tooltiptext");
+        tooltip_span.style.padding = "10px";
+
+        tooltiptxt = "";
+
+        if(forLineEval === "O(N)") {
+            tooltiptxt = "This loop is incrementing all or almost all elements in a variable range";
+        }
+        else if(forLineEval === "O(log(N))") {
+            tooltiptxt = "This loop is only visiting a fraction of the elements in a variable range";
+        }
+        else if(forLineEval === "O(1)") {
+            tooltiptxt = "The number of computations will always be the same";
+        }
+
+        tooltip_span.appendChild(document.createTextNode(tooltiptxt))
+
+        if(!forLineEval) {
+            forLineEval = "Error: bad syntax or infinite loop";
+            span_eval.style.color = "red";
+        }
 
         let evalTxt = document.createTextNode(forLineEval);
         span_eval.appendChild(evalTxt);
@@ -89,7 +121,9 @@ function displayForLineAnalysis(codeAnalysis, forLines, forLineEvals) {
 
         let forLineTxt = document.createTextNode(forLine);
         p.appendChild(forLineTxt);
-        p.appendChild(span_eval);
+        div_eval.appendChild(span_eval);
+        div_eval.appendChild(tooltip_span);
+        p.appendChild(div_eval);
         p.appendChild(span_level);
 
         codeAnalysis.appendChild(p);
@@ -109,10 +143,12 @@ function parseInput(code, codeAnalysis) {
     let finalBigO = result['final']
     let forLines = result['forLines'];
     let forLineEvals = result['forLineEvals']
+    let start = result['start'];
+    let end = result['end'];
 
     if(finalBigO && forLines && forLineEvals) {
         // display each for line evaluation:
-        displayForLineAnalysis(codeAnalysis, forLines, forLineEvals);
+        displayForLineAnalysis(codeAnalysis, forLines, forLineEvals, start, end);
     }
 
     return finalBigO;
