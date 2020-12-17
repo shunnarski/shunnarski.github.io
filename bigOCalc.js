@@ -19,7 +19,7 @@ function getBiggestBigOString(bigObjs) {
         var numberNs = 0;
         for(var k = 0; k < bigOStr.length; k++) {
             var c = bigOStr[k];
-            if (c == 'N') {
+            if (c === 'N') {
                 numberNs++;
             }
         }
@@ -34,7 +34,7 @@ function getBiggestBigOString(bigObjs) {
 
     topBigNStrings = [];
     for(var i = 0; i < numberNsList.length; i++) {
-        if(numberNsList[i] == maxNs) {
+        if(numberNsList[i] === maxNs) {
             topBigNStrings.push(bigOStrings[i]);
         }
     }
@@ -44,7 +44,7 @@ function getBiggestBigOString(bigObjs) {
     if(topBigNStrings.length == 1) {
         var res;
         for(var i = 0; i < bigOStrings.length; i++) {
-            if(bigOStrings[i] == topBigNStrings[0]) {
+            if(bigOStrings[i] === topBigNStrings[0]) {
                 res = bigObjs[i];
             }
         }
@@ -59,7 +59,7 @@ function getBiggestBigOString(bigObjs) {
         var LsCount = 0;
         for(var k = 0; k < str.length; k++) {
             var c = str[k];
-            if(c == 'L') {
+            if(c === 'L') {
                 LsCount++;
             }
         }
@@ -87,11 +87,11 @@ function evalToBigOChar(eval) {
         return "N";
     }
 
-    else if(eval == 'log') {
+    else if(eval === 'log') {
         return "L";
     }
     
-    else if(eval == "const") {
+    else if(eval === "const") {
         return "O";
     }
 
@@ -107,10 +107,10 @@ function translateBigOStringToBigO(bigOString) {
 
     for(var i = 0; i < bigOString.length; i++) {
         var c = bigOString[i];
-        if (c == 'N') {
+        if (c === 'N') {
             nCount++;
         }
-        else if(c == 'L') {
+        else if(c === 'L') {
             lCount++;
         }
     }
@@ -213,7 +213,7 @@ function evaluateForLoopElements(initValue, rangeStop, rangeOp, inc) {
                 return "err";
             }
             else if(rangeOp === ">=" || rangeOp === ">") {
-                if(inc == "--" || inc == "-=") {
+                if(inc === "--" || inc === "-=") {
                     return "lin";
                 }
                 else if(inc === "/=") {
@@ -431,7 +431,7 @@ function colonSplit(forLine, level) {
         if(rangeTypeCheck === "var") {
             operationDone = "lin";
         }
-        else if(rangeTypeCheck == "num") {
+        else if(rangeTypeCheck === "num") {
             operationDone = "const";
         }
         else {
@@ -498,7 +498,7 @@ function getBigONotation(forStatements) {
             hasError = true;
         }
 
-        if(eval == "lazy") {
+        if(eval === "lazy") {
             isLazy = true;
         }
 
