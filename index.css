@@ -42,6 +42,9 @@ span, p, li {
 
 .home-page-img {
     width: 95%;
+    object-fit: cover;
+    height: 20vw;
+    /* max-height: 25vw; */
     filter: grayscale(100%);
     transition: .2s;
 }
@@ -49,7 +52,7 @@ span, p, li {
 .header {
     display: block;
     text-align: center;
-    font-size: 36px;
+    font-size: 52px;
     font-weight: 500;
     color: white;
 }
@@ -61,7 +64,7 @@ span, p, li {
 .subheader {
     display: block;
     text-align: center;
-    font-size: 20px;
+    font-size: 26px;
     font-weight: 200;
     color: white;
     margin-bottom: 100px;

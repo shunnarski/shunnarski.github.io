@@ -2,3 +2,7 @@ body {
     background-image: linear-gradient(to bottom right, black, rgb(65, 65, 65));
     color: white;
 }
+
+h1, span, p {
+    color: white;
+}
