@@ -4,6 +4,18 @@ body {
 }
 
 
-h1, span, p {
+h1, h2, span, p {
     color: white;
+}
+
+.back-btn {
+    position: sticky;
+    top:20;
+    left:20;
+    font-size: 24px;
+}
+
+.video-line {
+    text-align: center;
+    padding: 30px;
 }

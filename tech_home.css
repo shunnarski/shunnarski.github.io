@@ -9,6 +9,7 @@ h1, h2, span, p {
 
 .back-btn {
     position: sticky;
+    position: -webkit-sticky;
     top:20;
     left:20;
     font-size: 24px;
